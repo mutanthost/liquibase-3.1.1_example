@@ -7,5 +7,26 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet id="1" author="stefanborghys" context="dev">
+		<comment>Create a new user_info table.</comment>
+		<createTable tableName="user_info" remarks="This table stores all personal user information.">
+			<column name="id" type="int" autoIncrement="true" remarks="A unique user identifier.">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="first_name" type="varchar(50)" remarks="The first name.">
+				<constraints nullable="false" />
+			</column>
+			<column name="last_name" type="varchar(50)" remarks="The last name.">
+				<constraints nullable="false" />
+			</column>
+			<column name="birthday" type="timestamp" remarks="The date of birth.">
+				<constraints nullable="false"/>
+			</column>
+			<column name="photo_path" type="varchar(100)" remarks="Path to the storage location of the users photo, if uploaded.">
+				<constraints nullable="true"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="user_info"/>
+		</rollback>
 	</changeSet>
 </databaseChangeLog>
