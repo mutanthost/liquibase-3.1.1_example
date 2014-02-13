@@ -29,4 +29,9 @@
 			<dropTable tableName="user_info"/>
 		</rollback>
 	</changeSet>
+
+	<changeSet id="2" author="stefanborghys" context="dev">
+		<comment>Create a new user info id sequence.</comment>
+		<createSequence cycle="false" incrementBy="1" minValue="1" ordered="true" sequenceName="user_info_id_seq" startValue="1"/>
+	</changeSet>
 </databaseChangeLog>
