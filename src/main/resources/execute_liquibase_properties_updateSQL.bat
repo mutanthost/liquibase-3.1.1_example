@@ -1,0 +1,1 @@
+java -jar ../../../lib/liquibase-3.1.1-bin/liquibase.jar --contexts=dev,test updateSQL > ../../../target/liquibase/sql/script.sql
