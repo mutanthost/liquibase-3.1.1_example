@@ -3,6 +3,7 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:ora="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
@@ -33,5 +34,12 @@
 	<changeSet id="2" author="stefanborghys" context="dev">
 		<comment>Create a new user info id sequence.</comment>
 		<createSequence cycle="false" incrementBy="1" minValue="1" ordered="true" sequenceName="user_info_id_seq" startValue="1"/>
+	</changeSet>
+
+	<changeSet id="3" author="stefanborghys" context="dev" runOnChange="true">
+		<comment>Create a new user info id trigger.</comment>
+		<ora:createTrigger afterBeforeInsteadOf="before"
+		procedure="BEGIN BEGIN IF :NEW.id IS NULL THEN SELECT user_info_id_seq.nextVal INTO :NEW.id FROM DUAL; END IF; END; NULL; END;"
+		triggerName="user_info_id_trigger" tableName="user_info" insert="true" forEachRow="true" />
 	</changeSet>
 </databaseChangeLog>
