@@ -1,0 +1,5 @@
+"id","first_name","last_name","birthday","photo_path"
+1,george,clooney,SYSDATE,NULL
+2,leonardo,dicaprio,SYSDATE,NULL
+3,angelina,jolie,SYSDATE,NULL
+4,scarlett,johansson,SYSDATE,NULL

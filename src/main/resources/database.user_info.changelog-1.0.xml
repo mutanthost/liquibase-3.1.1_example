@@ -73,4 +73,14 @@
 			<sql>DROP TRIGGER user_info_id_trigger;</sql>
 		</rollback>
 	</changeSet>
+
+	<changeSet id="4" author="stefanborghys" context="test">
+		<loadData encoding="UTF-8" file="data/database.user_info.testdata-1.0.csv" separator="," tableName="user_info">
+			<column name="id" type="numeric"/>
+			<column name="first_name" type="string"/>
+			<column name="last_name" type="string"/>
+			<column name="birthday" type="timestamp"/>
+			<column name="photo_path" type="string"/>
+		</loadData>
+	</changeSet>
 </databaseChangeLog>
