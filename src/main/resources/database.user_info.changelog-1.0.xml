@@ -36,10 +36,41 @@
 		<createSequence cycle="false" incrementBy="1" minValue="1" ordered="true" sequenceName="user_info_id_seq" startValue="1"/>
 	</changeSet>
 
+	<!-- 
+	# MESSAGE: createTrigger is currently not working with liquibase-oracle extention version 3.0.0.
+	A message "schemaName is not allowed on oracle, ..." is shown when performing an update using this version.
+	This issue is reported (https://github.com/liquibase/liquibase-oracle/pull/3) 
+	and a fix is created but not yet released in a new version.
+	Downloading the source and creating the jar myself did not work, due to failure of multiple test scenarios.
+	
+	# I tried to bypass this by falling back on liquibase-oracle extention version 1.2.0 
+	but this is not compatible with the dbchangelog-3.1.xsd version used here.
+	A discussion about this can be followed on http://forum.liquibase.org/topic/liquibase-oracle-in-3-0-0 .
+	
+	# Since i didn't wanted to compromize any further and do not trust the extentions state at the moment.
+	I will create a new trigger using good old sql statements.
+	-->
 	<changeSet id="3" author="stefanborghys" context="dev" runOnChange="true">
 		<comment>Create a new user info id trigger.</comment>
+		<!--
 		<ora:createTrigger afterBeforeInsteadOf="before"
 		procedure="BEGIN BEGIN IF :NEW.id IS NULL THEN SELECT user_info_id_seq.nextVal INTO :NEW.id FROM DUAL; END IF; END; NULL; END;"
 		triggerName="user_info_id_trigger" tableName="user_info" insert="true" forEachRow="true" />
+		-->
+		<sql dbms="oracle" endDelimiter="/" splitStatements="true" stripComments="true">
+			CREATE OR REPLACE TRIGGER user_info_id_trigger 
+			BEFORE INSERT ON user_info  
+			FOR EACH ROW 
+			BEGIN
+				IF :NEW.id IS NULL THEN 
+					SELECT user_info_id_seq.nextVal INTO :NEW.id FROM DUAL; 
+				END IF;
+				NULL;
+			END;
+			/
+		</sql>
+		<rollback>
+			<sql>DROP TRIGGER user_info_id_trigger;</sql>
+		</rollback>
 	</changeSet>
 </databaseChangeLog>
