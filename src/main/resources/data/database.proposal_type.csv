@@ -1,0 +1,6 @@
+"id","name","description"
+1,DAY,Propose a day to vote on.
+2,HOUR,Propose an hour to vote on.
+3,TEXT,Propose a message to vote on.
+4,URL,Propose an url to vote on.
+5,FRIEND,Propose a friend to vote on.

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:ora="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="stefanborghys" context="dev">
+		<comment>Create a new account table.</comment>
+		<createTable tableName="account" remarks="The account table stores all authentication information.">
+			<column name="id" type="int" autoIncrement="true" remarks="A unique account identifier.">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)" remarks="The name to login with.">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="email_address" type="varchar(320)" remarks="A unique email address used for authorization of the account.">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="is_email_verified" type="boolean" defaultValueBoolean="false" 
+			remarks="Flag to indicate the verification state of the email address.">
+				<constraints nullable="false"/>
+			</column>
+			<column name="password" type="blob" remarks="An encrypted password used to login with.">
+				<constraints nullable="false"/>
+			</column>
+			<column name="password_token" type="varchar(50)" remarks="Generated token used to reset the password.">
+				<constraints nullable="true"/>
+			</column>
+			<column name="creation_time" type="timestamp" remarks="The accounts creation time.">
+				<constraints nullable="false"/>
+			</column>
+			<column name="user_info_id" type="int" remarks="Links the account to user information by it's id after verification of the email address.">
+				<constraints nullable="true" unique="true"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="account"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="2" author="stefanborghys" context="dev">
+		<addForeignKeyConstraint baseColumnNames="user_info_id" baseTableName="account"
+			constraintName="fk_account_user_info"
+			deferrable="true"
+			initiallyDeferred="true"
+			onDelete="CASCADE"
+			onUpdate="RESTRICT"
+			referencedColumnNames="id" referencedTableName="user_info"/>
+	</changeSet>
+
+	<changeSet id="3" author="stefanborghys" context="dev">
+		<comment>Create a new account id sequence.</comment>
+		<createSequence cycle="false" incrementBy="1" minValue="1" ordered="true" sequenceName="account_id_seq" startValue="1"/>
+	</changeSet>
+
+	<!-- 
+	# MESSAGE: createTrigger is currently not working with liquibase-oracle extention version 3.0.0.
+	A message "schemaName is not allowed on oracle, ..." is shown when performing an update using this version.
+	This issue is reported (https://github.com/liquibase/liquibase-oracle/pull/3) 
+	and a fix is created but not yet released in a new version.
+	Downloading the source and creating the jar myself did not work, due to failure of multiple test scenarios.
+	
+	# I tried to bypass this by falling back on liquibase-oracle extention version 1.2.0 
+	but this is not compatible with the dbchangelog-3.1.xsd version used here.
+	A discussion about this can be followed on http://forum.liquibase.org/topic/liquibase-oracle-in-3-0-0 .
+	
+	# Since i didn't wanted to compromize any further and do not trust the extentions state at the moment.
+	I will create a new trigger using good old sql statements.
+	-->
+	<changeSet id="4" author="stefanborghys" context="dev" dbms="oracle" runOnChange="true">
+		<comment>Create a new account id trigger.</comment>
+		<!--
+		<ora:createTrigger afterBeforeInsteadOf="before"
+		procedure="BEGIN BEGIN IF :NEW.id IS NULL THEN SELECT account_id_seq.nextVal INTO :NEW.id FROM DUAL; END IF; END; NULL; END;"
+		triggerName="account_id_trigger" tableName="account" insert="true" forEachRow="true" />
+		-->
+		<sql dbms="oracle" endDelimiter="/" splitStatements="true" stripComments="true">
+			CREATE OR REPLACE TRIGGER account_id_trigger 
+			BEFORE INSERT ON account  
+			FOR EACH ROW 
+			BEGIN
+				IF :NEW.id IS NULL THEN 
+					SELECT account_id_seq.nextVal INTO :NEW.id FROM DUAL; 
+				END IF;
+				NULL;
+			END;
+			/
+		</sql>
+		<rollback>
+			<sql>DROP TRIGGER account_id_trigger;</sql>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="5" author="stefanborghys" context="test">
+		<loadData encoding="UTF-8" file="data/database.account.testdata-1.0.csv" separator="," tableName="account">
+			<column name="id" type="numeric"/>
+			<column name="name" type="string"/>
+			<column name="email_address" type="string"/>
+			<column name="is_email_verified" type="boolean"/>
+			<column name="password" type="string"/>
+			<column name="password_token" type="string"/>
+			<column name="creation_time" type="timestamp"/>
+			<column name="user_info_id" type="numeric"/>
+		</loadData>
+	</changeSet>
+</databaseChangeLog>

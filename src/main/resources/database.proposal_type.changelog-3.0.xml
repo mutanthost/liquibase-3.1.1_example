@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="stefanborghys" context="dev">
+		<comment>Create a new proposal type table.</comment>
+		<createTable tableName="proposal_type" remarks="This table stores all proposal types.">
+			<column name="id" type="int" autoIncrement="true" remarks="A unique proposal type identifier.">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)" remarks="The name.">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(100)" remarks="Brief description.">
+				<constraints nullable="true"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="proposal_type"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="2" author="stefanborghys" context="dev">
+		<loadData encoding="UTF-8" file="data/database.proposal_type.csv" separator="," tableName="proposal_type">
+			<column name="id" type="numeric"/>
+			<column name="name" type="string"/>
+			<column name="description" type="string"/>
+		</loadData>
+	</changeSet>
+</databaseChangeLog>

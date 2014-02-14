@@ -1,0 +1,3 @@
+"id","subject","description","deadline","isSingleVote","author","proposal_type_id"
+1,"My best movie","Hey guys, what do you think is my best acting?",SYSDATE,true,2,4
+2,"Dinner time!","What shall i order?",SYSDATE,false,4,3

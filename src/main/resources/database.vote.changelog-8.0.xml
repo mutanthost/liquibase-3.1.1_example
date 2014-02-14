@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:ora="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="stefanborghys" context="dev">
+		<comment>Create a new vote table.</comment>
+		<createTable tableName="vote" remarks="This table stores all votes made for a proposal.">
+			<column name="id" type="int" autoIncrement="true" remarks="A unique vote identifier.">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="proposal_id" type="int" remarks="Links to a proposal by id.">
+				<constraints nullable="false"/>
+			</column>
+			<column name="user_info_id" type="int" remarks="Links to a user by id.">
+				<constraints nullable="false"/>
+			</column>
+			<column name="choice_id" type="int" remarks="Links to a choice by id.">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="vote"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="2" author="stefanborghys" context="dev">
+		<addForeignKeyConstraint baseColumnNames="proposal_id" baseTableName="vote"
+			constraintName="fk_vote_proposal"
+			deferrable="true"
+			initiallyDeferred="true"
+			onDelete="RESTRICT"
+			onUpdate="RESTRICT"
+			referencedColumnNames="id" referencedTableName="proposal"/>
+	</changeSet>
+
+	<changeSet id="3" author="stefanborghys" context="dev">
+		<addForeignKeyConstraint baseColumnNames="user_info_id" baseTableName="vote"
+			constraintName="fk_vote_user_info"
+			deferrable="true"
+			initiallyDeferred="true"
+			onDelete="RESTRICT"
+			onUpdate="RESTRICT"
+			referencedColumnNames="id" referencedTableName="user_info"/>
+	</changeSet>
+
+	<changeSet id="4" author="stefanborghys" context="dev">
+		<addForeignKeyConstraint baseColumnNames="choice_id" baseTableName="vote"
+			constraintName="fk_vote_choice"
+			deferrable="true"
+			initiallyDeferred="true"
+			onDelete="RESTRICT"
+			onUpdate="RESTRICT"
+			referencedColumnNames="id" referencedTableName="choice"/>
+	</changeSet>
+
+	<changeSet id="5" author="stefanborghys" context="dev">
+		<comment>Create a new vote id sequence.</comment>
+		<createSequence cycle="false" incrementBy="1" minValue="1" ordered="true" sequenceName="vote_id_seq" startValue="1"/>
+	</changeSet>
+
+	<!-- 
+	# MESSAGE: createTrigger is currently not working with liquibase-oracle extention version 3.0.0.
+	A message "schemaName is not allowed on oracle, ..." is shown when performing an update using this version.
+	This issue is reported (https://github.com/liquibase/liquibase-oracle/pull/3) 
+	and a fix is created but not yet released in a new version.
+	Downloading the source and creating the jar myself did not work, due to failure of multiple test scenarios.
+	
+	# I tried to bypass this by falling back on liquibase-oracle extention version 1.2.0 
+	but this is not compatible with the dbchangelog-3.1.xsd version used here.
+	A discussion about this can be followed on http://forum.liquibase.org/topic/liquibase-oracle-in-3-0-0 .
+	
+	# Since i didn't wanted to compromize any further and do not trust the extentions state at the moment.
+	I will create a new trigger using good old sql statements.
+	-->
+	<changeSet id="6" author="stefanborghys" context="dev" runOnChange="true">
+		<comment>Create a new vote id trigger.</comment>
+		<!--
+		<ora:createTrigger afterBeforeInsteadOf="before"
+		procedure="BEGIN BEGIN IF :NEW.id IS NULL THEN SELECT vote_id_seq.nextVal INTO :NEW.id FROM DUAL; END IF; END; NULL; END;"
+		triggerName="vote_id_trigger" tableName="vote" insert="true" forEachRow="true" />
+		-->
+		<sql dbms="oracle" endDelimiter="/" splitStatements="true" stripComments="true">
+			CREATE OR REPLACE TRIGGER vote_id_trigger 
+			BEFORE INSERT ON vote  
+			FOR EACH ROW 
+			BEGIN
+				IF :NEW.id IS NULL THEN 
+					SELECT vote_id_seq.nextVal INTO :NEW.id FROM DUAL; 
+				END IF;
+				NULL;
+			END;
+			/
+		</sql>
+		<rollback>
+			<sql>DROP TRIGGER vote_id_trigger;</sql>
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

@@ -7,4 +7,13 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<include file="database.user_info.changelog-1.0.xml"/>
+	<include file="database.account.changelog-2.0.xml"/>
+	<include file="database.proposal_type.changelog-3.0.xml"/>
+	<include file="database.proposal.changelog-4.0.xml"/>
+	<include file="database.user_proposal.changelog-5.0.xml"/>
+	<include file="database.choice.changelog-6.0.xml"/>
+	<include file="database.proposal_voter.changelog-7.0.xml"/>
+	<include file="database.vote.changelog-8.0.xml"/>
+	<include file="database.friend.changelog-9.0.xml"/>
+	<include file="database.account.changelog-2.1.xml"/>
 </databaseChangeLog>

@@ -1,0 +1,5 @@
+"id","name","email_address","is_email_verified","password","password_token","creation_time","user_info_id"
+1,george_clooney,george.clooney@test.be,true,'67656f726765',NULL,SYSDATE,NULL
+2,leonardo_dicaprio,leonardo.dicaprio@test.be,true,'6c656f6e6172646f',NULL,SYSDATE,NULL
+3,angelina_jolie,angelina.jolie@test.be,true,'616e67656c696e61',NULL,SYSDATE,NULL
+4,scarlett_johansson,scarlett.johansson@test.be,true,'736361726c657474',NULL,SYSDATE,NULL
