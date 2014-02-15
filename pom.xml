@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>be.seriousbusiness.database.liquibase.example</groupId>
+	<artifactId>liquibase_example</artifactId>
+	<version>1.0</version>
+	<name>Liquibase example</name>
+	<url>http://www.seriousbusiness.be</url>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<!-- Oracle JDBC -->
+		<!-- Don't forget to install the correct jdbc driver before adding this dependency!
+		This can be done by running 'maven_install_oracle_jdbc_driver.bat' after correcting the parameters where needed. -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.4</version>
+		</dependency>
+		<!-- Liquibase -->
+		<!-- Dependencies can be found on: http://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+	</dependencies>
+</project>
