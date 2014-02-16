@@ -122,7 +122,7 @@
 			<!-- Use following configuration to run liquibase on the local database --> 
 			<id>local</id>
 			<properties>
-				<liquibase.changeLogFile>src/main/resources/database.changelog-master.xml</liquibase.changeLogFile>
+				<liquibase.changeLogFile>database.changelog-master.xml</liquibase.changeLogFile>
 				<liquibase.clearCheckSums>false</liquibase.clearCheckSums>
 				<liquibase.contexts>dev</liquibase.contexts>
 				<liquibase.password>testPassword</liquibase.password>
@@ -136,7 +136,7 @@
 			<!-- Use following configuration to run liquibase on the local database --> 
 			<id>localTestData</id>
 			<properties>
-				<liquibase.changeLogFile>src/main/resources/database.changelog-master.xml</liquibase.changeLogFile>
+				<liquibase.changeLogFile>database.changelog-master.xml</liquibase.changeLogFile>
 				<liquibase.clearCheckSums>false</liquibase.clearCheckSums>
 				<liquibase.contexts>test</liquibase.contexts>
 				<liquibase.password>testPassword</liquibase.password>
